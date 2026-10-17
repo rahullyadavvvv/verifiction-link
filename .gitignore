@@ -1,0 +1,16 @@
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+backend/dist/
+frontend/dist/
+data/
+**/data/
+.env
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+*.xlsx
+*.xls
+*.tsbuildinfo
+.DS_Store
