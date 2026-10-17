@@ -25,6 +25,15 @@ test("upload preview, job processing, result pagination, and report download wor
   let jobId = "";
 
   try {
+  const allowedOriginResponse = await fetch(`${origin}/api/health`, {
+    headers: { Origin: "http://localhost:5173" },
+  });
+  assert.equal(allowedOriginResponse.headers.get("access-control-allow-origin"), "http://localhost:5173");
+  const blockedOriginResponse = await fetch(`${origin}/api/health`, {
+    headers: { Origin: "https://untrusted.example" },
+  });
+  assert.equal(blockedOriginResponse.headers.get("access-control-allow-origin"), null);
+
     const aiStatusResponse = await fetch(`${origin}/api/ai/status`);
     assert.equal(aiStatusResponse.status, 200);
     const aiStatus = await aiStatusResponse.json() as { available: boolean; model: string };

@@ -7,7 +7,10 @@ const integer = (value: string | undefined, fallback: number, min: number, max: 
 
 export const config = {
   port: integer(process.env.PORT, 3001, 1, 65535),
-  frontendOrigin: process.env.FRONTEND_ORIGIN ?? "http://localhost:5173",
+  frontendOrigins: (process.env.FRONTEND_ORIGIN ?? "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   dataDir: path.resolve(process.env.DATA_DIR ?? "./data"),
   maxUploadBytes: integer(process.env.MAX_UPLOAD_MB, 15, 1, 100) * 1024 * 1024,
   maxRows: integer(process.env.MAX_ROWS, 10000, 1, 100000),

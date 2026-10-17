@@ -36,7 +36,15 @@ const upload = multer({
   },
 });
 
-app.use(cors({ origin: config.frontendOrigin }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || config.frontendOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  },
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use((request, response, next) => {
   const started = Date.now();

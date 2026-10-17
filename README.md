@@ -23,6 +23,17 @@ npm run dev
 
 If Ollama is not already running after installation, start it in a separate terminal with `ollama serve`. Its local API listens on `http://127.0.0.1:11434` by default. The dashboard runs at `http://localhost:5173`; the API runs at `http://localhost:3001`. The dashboard displays the model connection status. For a production build, run `npm run build`, then start the API with `npm run start --workspace backend` and serve the built `frontend/dist` directory with a static web server that proxies `/api` to port 3001.
 
+## Deploy to Vercel and Render
+
+The Vercel deployment serves the React frontend; the Express/Playwright API runs on Render because it needs a long-lived browser worker and persistent job storage. The included `vercel.json`, `Dockerfile`, and `render.yaml` configure these services.
+
+1. In Render, create a Blueprint from this repository and deploy `render.yaml`. Wait for the API service to become healthy at `/api/health`. The blueprint uses a persistent disk for job state and reports.
+2. In Vercel, import the same GitHub repository and deploy from the repository root. Set `VITE_API_BASE_URL` to the Render service origin, for example `https://linkedin-url-verifier-api.onrender.com` (no trailing slash), then redeploy the frontend.
+3. In Render, set `FRONTEND_ORIGIN` to the exact Vercel production origin, such as `https://your-project.vercel.app`. For additional preview or custom domains, add each full origin separated by commas, then redeploy the API.
+4. Optionally set `LINKEDIN_API_ACCESS_TOKEN` in Render only if you have an authorized token for the official LinkedIn API. Never place it in Vercel frontend variables; frontend variables are public.
+
+The Render blueprint uses a persistent disk and a paid service plan; check current provider pricing before deployment. Ollama running on your own computer is not reachable from the hosted service by default, so local AI review will be unavailable unless you arrange a private, secure network connection. Browser checks remain subject to LinkedIn login prompts, access controls, and rate limits.
+
 Environment values are optional; defaults are documented in `.env.example`. `OLLAMA_MODEL` selects an already-downloaded local model; `OLLAMA_URL` is restricted to loopback hosts so workbook evidence cannot be forwarded to a remote model by configuration. `DATA_DIR` stores job state and generated reports locally. Completed row data is checkpointed incrementally, so a paused or interrupted job can be resumed in the dashboard after restarting the API. Job data and generated files older than `FILE_RETENTION_DAYS` are removed at API startup.
 
 For official API checks of company URLs, create a LinkedIn Developer application and obtain authorized 3-legged OAuth access for the Organization Lookup API. Store the access token in `backend/.env` as `LINKEDIN_API_ACCESS_TOKEN` and set `LINKEDIN_API_VERSION` to a currently supported `YYYYMM` API version. Never paste the token into chat, the workbook, or source files. The app uses the official vanity-name/organization-ID lookup endpoints for company URLs and marks each result `OFFICIAL_API`; other LinkedIn URL types continue using the browser verifier. LinkedIn's API access and organization permissions depend on the application/member's approval. Without a configured token, company checks use browser verification.

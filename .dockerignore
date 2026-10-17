@@ -1,0 +1,15 @@
+.git
+.vercel
+node_modules
+**/node_modules
+backend/dist
+frontend/dist
+backend/data
+data
+**/*.xlsx
+**/*.xls
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+*.tsbuildinfo

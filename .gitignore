@@ -13,4 +13,5 @@ data/
 *.xlsx
 *.xls
 *.tsbuildinfo
+.vercel/
 .DS_Store

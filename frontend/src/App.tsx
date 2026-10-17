@@ -100,8 +100,10 @@ const statuses = [
   "MISSING_URL",
 ];
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, init);
+  const response = await fetch(`${API_BASE_URL}${url}`, init);
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: `Request failed (${response.status}).` }));
     throw new Error(error.error ?? `Request failed (${response.status}).`);
@@ -293,7 +295,7 @@ export default function App() {
   };
 
   const exportResults = () => {
-    if (job) window.location.assign(`/api/jobs/${job.jobId}/export`);
+    if (job) window.location.assign(`${API_BASE_URL}/api/jobs/${job.jobId}/export`);
   };
 
   const startNewUpload = () => {

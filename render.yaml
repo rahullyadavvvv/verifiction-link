@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: linkedin-url-verifier-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    disk:
+      name: verifier-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: FRONTEND_ORIGIN
+        value: http://localhost:5173
+      - key: MAX_ROWS
+        value: "10000"
